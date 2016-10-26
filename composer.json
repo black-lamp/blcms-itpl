@@ -1,0 +1,21 @@
+{
+  "name": "black-lamp/blcms-itpl",
+  "description": "Backend template",
+  "keywords": ["yii2", "template", "backend"],
+  "type": "yii2-extension",
+  "license": "GPL-3.0",
+  "authors": [
+    {
+      "name": "Albert Gainutdinov",
+      "email": "xalbert.einsteinx@gmail.com"
+    }
+  ],
+  "require": {
+    "yiisoft/yii2": ">=2.0.4"
+  },
+  "autoload": {
+    "psr-4": {
+      "bl\\cms\\itpl\\": ""
+    }
+  }
+}
