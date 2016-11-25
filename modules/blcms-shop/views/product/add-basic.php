@@ -6,14 +6,9 @@
  * @var $products_translation \bl\cms\shop\common\entities\Product
  * @var $selectedLanguage \bl\multilang\entities\Language
  */
-use bl\cms\shop\common\entities\CategoryTranslation;
-use bl\cms\shop\common\entities\ProductAvailability;
-use bl\cms\shop\common\entities\ProductCountryTranslation;
-use bl\cms\shop\common\entities\Vendor;
+use bl\cms\shop\common\entities\{ProductAvailability, ProductCountryTranslation, Vendor};
 use marqu3s\summernote\Summernote;
-use yii\helpers\ArrayHelper;
-use yii\helpers\Html;
-use yii\helpers\Url;
+use yii\helpers\{ArrayHelper, Html, Url};
 use yii\widgets\ActiveForm;
 
 ?>
@@ -22,15 +17,21 @@ use yii\widgets\ActiveForm;
     'method' => 'post',
     'action' => [
         'product/add-basic',
-        'productId' => $product->id,
+        'id' => $product->id,
         'languageId' => $selectedLanguage->id
     ]]);
 ?>
+
+
+
+<!--SAVE BUTTON-->
+<?= Html::submitInput(\Yii::t('shop', 'Save'), ['class' => 'btn btn-xs btn-primary m-r-xs pull-right']); ?>
 
 <!--BASIC-->
 <div id="basic">
 
     <h2><?= \Yii::t('shop', 'Basic options'); ?></h2>
+
     <!--NAME-->
     <?= $form->field($products_translation, 'title', [
         'inputOptions' => [
@@ -38,56 +39,85 @@ use yii\widgets\ActiveForm;
         ]
     ])->label(\Yii::t('shop', 'Name'))
     ?>
-    <!--ARTICULUS-->
-    <?= $form->field($product, 'articulus', [
-        'inputOptions' => [
-            'class' => 'form-control'
-        ]
-    ])->label(\Yii::t('shop', 'Articulus'))
-    ?>
-    <!--CATEGORY-->
-    <b><?= \Yii::t('shop', 'Category'); ?></b>
-    <?= '<ul class="list-group ul-treefree ul-dropfree">'; ?>
-    <?= '<li class="list-group-item"><input type="radio" checked name="Product[category_id]" value="" id="null"><label for="null">' . \Yii::t("shop", "Without parent") . '</label>'; ?>
-    <?= CategoryTranslation::treeRecoursion($categoriesTree, $product->category_id, 'Product[category_id]'); ?>
-    <?= '</ul>'; ?>
 
-    <!--STANDART PRICE-->
-    <?= $form->field($product, 'price', [
+    <div class="row">
+        <!--CATEGORY-->
+        <div class="col-md-6">
+            <b><?= \Yii::t('shop', 'Category'); ?></b>
+            <?=
+            \bl\cms\shop\widgets\InputTree::widget([
+                'className' => \bl\cms\shop\common\entities\Category::className(),
+                'form' => $form,
+                'model' => $product,
+                'attribute' => 'category_id',
+                'languageId' => $selectedLanguage->id
+            ]);
+            ?>
+        </div>
+        <div class="col-md-6">
+            <div>
+                <!--ARTICULUS-->
+                <?= $form->field($product, 'articulus', [
+                    'inputOptions' => [
+                        'class' => 'form-control'
+                    ]
+                ])->label(\Yii::t('shop', 'Articulus'))
+                ?>
+            </div>
+            <div>
+                <!--STANDART PRICE-->
+                <?= $form->field($product, 'price', [
+                    'inputOptions' => [
+                        'class' => 'form-control'
+                    ]
+                ])->textInput(['type' => 'number', 'step' => '0.01'])->label(\Yii::t('shop', 'Price'))
+                ?>
+            </div>
+            <div>
+                <!--COUNTRY-->
+                <?= $form->field($product, 'country_id', [
+                    'inputOptions' => [
+                        'class' => 'form-control'
+                    ]
+                ])->dropDownList(
+                    ['' => '-- no countries --'] +
+                    ArrayHelper::map(ProductCountryTranslation::find()->where(['language_id' => $selectedLanguage->id])->all(), 'country_id', 'title')
+                )->label(\Yii::t('shop', 'Country'));
+                ?>
+            </div>
+            <div>
+                <!--VENDOR-->
+                <?= $form->field($product, 'vendor_id', [
+                    'inputOptions' => [
+                        'class' => 'form-control'
+                    ]
+                ])->dropDownList(
+                    ['' => '-- no vendor --'] +
+                    ArrayHelper::map(Vendor::find()->all(), 'id', 'title')
+                )->label(\Yii::t('shop', 'Vendor'))
+                ?>
+            </div>
+            <div>
+                <!--AVAILABILITY-->
+                <?= $form->field($product, 'availability', [
+                    'inputOptions' => [
+                        'class' => 'form-control'
+                    ]
+                ])->dropDownList(
+                    ArrayHelper::map(ProductAvailability::find()->all(), 'id', 'translation.title')
+                )->label(\Yii::t('shop', 'Availability'))
+                ?>
+            </div>
+        </div>
+    </div>
+
+
+    <!--SALE-->
+    <?= $form->field($product, 'sale', [
         'inputOptions' => [
-            'class' => 'form-control'
-        ]
-    ])->textInput(['type' => 'number', 'step' => '0.01'])->label(\Yii::t('shop', 'Price'))
-    ?>
-    <!--COUNTRY-->
-    <?= $form->field($product, 'country_id', [
-        'inputOptions' => [
-            'class' => 'form-control'
-        ]
-    ])->dropDownList(
-        ['' => '-- no countries --'] +
-        ArrayHelper::map(ProductCountryTranslation::find()->where(['language_id' => $selectedLanguage->id])->all(), 'country_id', 'title')
-    )->label(\Yii::t('shop', 'Country'));
-    ?>
-    <!--VENDOR-->
-    <?= $form->field($product, 'vendor_id', [
-        'inputOptions' => [
-            'class' => 'form-control'
-        ]
-    ])->dropDownList(
-        ['' => '-- no vendor --'] +
-        ArrayHelper::map(Vendor::find()->all(), 'id', 'title')
-    )->label(\Yii::t('shop', 'Vendor'))
-    ?>
-    <!--AVAILABILITY-->
-    <?= $form->field($product, 'availability', [
-        'inputOptions' => [
-            'class' => 'form-control'
-        ]
-    ])->dropDownList(
-        ArrayHelper::map(ProductAvailability::find()->all(), 'id', 'translation.title')
-    )->label(\Yii::t('shop', 'Availability'))
-    ?>
+            'class' => '']
+    ])->checkbox(['class' => '']); ?>
+
     <!--SHORT DESCRIPTION-->
     <?= $form->field($products_translation, 'description', [
         'inputOptions' => [
@@ -137,7 +167,7 @@ use yii\widgets\ActiveForm;
 
     <div class="ibox">
         <a href="<?= Url::to(['/shop/product']); ?>">
-            <?= Html::button(\Yii::t('shop', 'Close'), [
+            <?= Html::button(\Yii::t('shop', 'Cancel'), [
                 'class' => 'btn btn-xs btn-danger pull-right'
             ]); ?>
         </a>

@@ -15,7 +15,10 @@ use yii\widgets\Pjax;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = Yii::t('shop', 'Categories');
-$this->params['breadcrumbs'][] = $this->title;
+$this->params['breadcrumbs'] = [
+    Yii::t('shop', 'Shop'),
+    $this->title
+];
 ?>
 <div class="ibox">
 

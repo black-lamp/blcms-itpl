@@ -31,9 +31,9 @@ use yii\widgets\ActiveForm;
 
 
     <div class="ibox">
-        <!--CLOSE BUTTON-->
+        <!--CANCEL BUTTON-->
         <a href="<?= Url::to(['/shop/category']); ?>">
-            <?= Html::button(\Yii::t('shop', 'Close'), [
+            <?= Html::button(\Yii::t('shop', 'Cancel'), [
                 'class' => 'btn btn-danger btn-xs pull-right'
             ]); ?>
         </a>

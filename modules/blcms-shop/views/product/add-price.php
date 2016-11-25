@@ -24,7 +24,7 @@ use yii\widgets\Pjax;
 <?php $form = ActiveForm::begin([
     'action' => [
         'add-price',
-        'productId' => $product->id,
+        'id' => $product->id,
         'languageId' => $language->id
     ],
     'method' => 'post',
@@ -42,7 +42,7 @@ use yii\widgets\Pjax;
         <th class="col-md-3 text-center"><?= \Yii::t('shop', 'Title'); ?></th>
         <th class="col-md-3 text-center"><?= \Yii::t('shop', 'Price'); ?></th>
         <th class="col-md-2 text-center"><?= \Yii::t('shop', 'Sale type'); ?></th>
-        <th class="col-md-3 text-center"><?= \Yii::t('shop', 'Sale'); ?></th>
+        <th class="col-md-3 text-center"><?= \Yii::t('shop', 'Discount'); ?></th>
         <th class="col-md-1 text-center"><?= \Yii::t('shop', 'Control'); ?></th>
     </tr>
     </thead>
@@ -60,7 +60,7 @@ use yii\widgets\Pjax;
                     <?= Html::a('', [
                         'remove-price',
                         'priceId' => $price->id,
-                        'productId' => $product->id,
+                        'id' => $product->id,
                         'languageId' => $language->id
                     ],
                         [

@@ -2,7 +2,7 @@
 /**
  * @author Albert Gainutdinov <xalbert.einsteinx@gmail.com>
  */
-use bl\cms\shop\common\entities\CategoryTranslation;
+use bl\cms\shop\widgets\CategorySelector;
 use marqu3s\summernote\Summernote;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -30,15 +30,19 @@ use yii\widgets\ActiveForm;
             'inputOptions' => [
                 'class' => 'form-control'
             ]
-        ])->checkbox(['class' => 'i-checks', 'checked ' => ($category->show) ? '' : false])
+        ])->checkbox(['class' => 'i-checks', 'checked ' => ($category->show) ? '' : false]);
         ?>
 
         <!-- PARENT CATEGORY -->
-        <b><?= \Yii::t('shop', 'Parent category'); ?></b>
-        <?= '<ul class="list-group ul-treefree ul-dropfree">'; ?>
-        <?= '<li class="list-group-item"><input type="radio" checked name="Category[parent_id]" value="" id="null"><label for="null">' . \Yii::t("shop", "Without parent") . '</label>'; ?>
-        <?= CategoryTranslation::treeRecoursion($categoriesTree, $category->parent_id, 'Category[parent_id]', $category_translation->category_id); ?>
-        <?= '</ul>'; ?>
+        <?=
+        \bl\cms\shop\widgets\InputTree::widget([
+            'className' => \bl\cms\shop\common\entities\Category::className(),
+            'form' => $addForm,
+            'model' => $category,
+            'attribute' => 'parent_id',
+            'languageId' => $selectedLanguage->id
+        ]);
+        ?>
 
         <!-- DESCRIPTION -->
         <?= $addForm->field($category_translation, 'description', [
@@ -59,12 +63,13 @@ use yii\widgets\ActiveForm;
         ]); ?>
 
         <div class="ibox">
-            <!--CLOSE BUTTON-->
+            <!--CANCEL BUTTON-->
             <a href="<?= Url::to(['/shop/category']); ?>">
-                <?= Html::button(\Yii::t('shop', 'Close'), [
+                <?= Html::button(\Yii::t('shop', 'Cancel'), [
                     'class' => 'btn btn-danger btn-xs pull-right'
                 ]); ?>
             </a>
+            <!--SAVE BUTTON-->
             <?= Html::submitInput(\Yii::t('shop', 'Save'), ['class' => 'btn btn-xs btn-primary m-r-xs pull-right']); ?>
         </div>
     </div>

@@ -34,6 +34,17 @@ if ($category->isNewRecord) {
 else {
     $this->title = \Yii::t('shop', 'Edit category');
 }
+
+$this->params['breadcrumbs'] = [
+    Yii::t('shop', 'Shop'),
+    [
+        'label' => Yii::t('shop', 'Categories'),
+        'url' => ['/shop/category'],
+        'itemprop' => 'url'
+    ],
+];
+$this->params['breadcrumbs'][] = (!empty($category->translation)) ? $category->translation->title : '';
+
 ?>
 <?php
 Pjax::begin([
@@ -46,7 +57,7 @@ Pjax::begin([
     <!--TABS-->
     <ul class="nav nav-tabs">
         <li class="<?= Yii::$app->controller->action->id == 'add-basic' || Yii::$app->controller->action->id == 'save' ? 'tab active' : 'tab'; ?>">
-            <?= Html::a(Yii::t('shop', 'Basic'), $category->isNewRecord ? '' : Url::to(['save', 'id' => $category->id, 'languageId' => $selectedLanguage->id]), ['class' => 'image']); ?>
+            <?= Html::a(Yii::t('shop', 'Basic'), Url::to(['add-basic', 'id' => $category->id, 'languageId' => $selectedLanguage->id]), ['class' => '']); ?>
         </li>
         <li class="<?= Yii::$app->controller->action->id == 'add-seo' ? 'tab active' : 'tab'; ?> <?= $category->isNewRecord ? 'disabled' : '';?>">
             <?= Html::a(Yii::t('shop', 'SEO data'), $category->isNewRecord ? '' : Url::to(['add-seo', 'categoryId' => $category->id, 'languageId' => $selectedLanguage->id]), ['class' => 'image']); ?>
@@ -63,37 +74,16 @@ Pjax::begin([
     <div class="ibox-content">
 
         <!-- LANGUAGES -->
-        <?php if (count($languages) > 1): ?>
-            <div class="dropdown pull-right">
-                <button class="btn btn-warning btn-xs m-t-xs m-l-xs dropdown-toggle m-r-xs" type="button"
-                        id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true"
-                        aria-expanded="true">
-                    <?= $selectedLanguage->name ?>
-                    <span class="caret"></span>
-                </button>
-                <?php if (count($languages) > 1): ?>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                        <?php foreach ($languages as $language): ?>
-                            <li>
-                                <a href="
-                                        <?= Url::to([
-                                    'save',
-                                    'id' => $category->id,
-                                    'languageId' => $language->id]) ?>
-                                                ">
-                                    <?= $language->name ?>
-                                </a>
-                            </li>
-                        <?php endforeach; ?>
-                    </ul>
-                <?php endif; ?>
-            </div>
-        <?php endif; ?>
+        <?= \bl\cms\shop\widgets\LanguageSwitcher::widget([
+            'languages' => $languages,
+            'selectedLanguage' => $selectedLanguage,
+            'model' => $category
+        ]); ?>
 
-        <!--CLOSE BUTTON-->
+        <!--CANCEL BUTTON-->
         <a href="<?= Url::to(['/shop/category']); ?>">
-            <?= Html::button(\Yii::t('shop', 'Close'), [
-                'class' => 'btn m-t-xs btn-danger btn-xs pull-right'
+            <?= Html::button(\Yii::t('shop', 'Cancel'), [
+                'class' => 'btn m-t-xs m-r-xs btn-danger btn-xs pull-right'
             ]); ?>
         </a>
 

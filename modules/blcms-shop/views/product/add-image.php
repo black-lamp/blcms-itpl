@@ -21,7 +21,7 @@ use yii\widgets\Pjax;
 <?php $addImageForm = ActiveForm::begin([
     'action' => [
         'product/add-image',
-        'productId' => $product->id,
+        'id' => $product->id,
         'languageId' => $selectedLanguage->id
     ],
     'method' => 'post',

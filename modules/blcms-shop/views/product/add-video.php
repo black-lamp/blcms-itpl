@@ -31,7 +31,7 @@ use yii\widgets\Pjax;
 <?php $addVideoForm = ActiveForm::begin([
     'action' => [
         'product/add-video',
-        'productId' => $product->id,
+        'id' => $product->id,
         'languageId' => $selectedLanguage->id
     ],
     'method' => 'post',
@@ -70,7 +70,7 @@ use yii\widgets\Pjax;
 <?php $uploadVideoForm = ActiveForm::begin([
     'action' => [
         'product/upload-video',
-        'productId' => $product->id,
+        'id' => $product->id,
         'languageId' => $selectedLanguage->id
     ],
     'method' => 'post',

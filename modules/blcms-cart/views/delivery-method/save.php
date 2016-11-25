@@ -1,5 +1,5 @@
 <?php
-use bl\imagable\helpers\FileHelper;
+use bl\cms\shop\widgets\LanguageSwitcher;
 use marqu3s\summernote\Summernote;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
@@ -16,49 +16,40 @@ use yii\helpers\Url;
  * @var $selectedLanguage \bl\multilang\entities\Language
  */
 
-$this->title = Yii::t('shop', 'Delivery method');
+$this->title = ($modelTranslation->isNewRecord) ?
+    Yii::t('cart', 'Creating new delivery method') :
+    Yii::t('cart', 'Editing delivery method');
 ?>
 
+
 <div class="ibox">
+
+    <?php $form = ActiveForm::begin(); ?>
     <div class="ibox-title">
-        <!-- LANGUAGES -->
-        <?php if (count($languages) > 1): ?>
-            <div class="dropdown pull-right">
-                <button class="btn btn-warning btn-xs m-t-xs m-l-xs dropdown-toggle m-r-xs" type="button"
-                        id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true"
-                        aria-expanded="true">
-                    <?= $selectedLanguage->name ?>
-                    <span class="caret"></span>
-                </button>
-                <?php if (count($languages) > 1): ?>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                        <?php foreach ($languages as $language): ?>
-                            <li>
-                                <a href="
-                                        <?= Url::to([
-                                    'save',
-                                    'id' => $model->id,
-                                    'languageId' => $language->id]) ?>
-                                                ">
-                                    <?= $language->name ?>
-                                </a>
-                            </li>
-                        <?php endforeach; ?>
-                    </ul>
-                <?php endif; ?>
-            </div>
-        <?php endif; ?>
         <h5>
             <i class="glyphicon glyphicon-list">
             </i>
             <?= Html::encode($this->title); ?>
         </h5>
 
+        <!-- LANGUAGES -->
+        <?= LanguageSwitcher::widget([
+            'languages' => $languages,
+            'selectedLanguage' => $selectedLanguage,
+            'model' => $model
+        ]); ?>
+
+        <!--CANCEL BUTTON-->
+        <?= Html::a(Yii::t('shop', 'Cancel'), Url::toRoute('delivery-method/index'),
+            ['class' => 'pull-right btn btn-xs btn-danger m-r-xs m-t-xs']); ?>
+
+        <!--SAVE BUTTON-->
+        <?= Html::submitButton(Yii::t('shop', 'Save'),
+            ['class' => 'pull-right btn btn-xs btn-primary m-r-xs m-t-xs']); ?>
+
     </div>
 
     <div class="ibox-content">
-
-        <?php $form = ActiveForm::begin(['options' => ['enctype' => 'multipart/form-data']]); ?>
         <?= $form->field($modelTranslation, 'title')->textInput(['maxlength' => true]); ?>
         <?= $form->field($modelTranslation, 'description')->widget(Summernote::className()); ?>
         <?= $form->field($model, 'show_address_or_post_office')->dropDownList([
@@ -77,12 +68,12 @@ $this->title = Yii::t('shop', 'Delivery method');
                 <?php endif; ?>
             </div>
         </div>
+
         <div class="form-group">
-            <?= Html::a(Yii::t('shop', 'Close'), Url::toRoute('delivery-method/index'), ['class' => 'btn btn-xs btn-danger pull-right']); ?>
+            <?= Html::a(Yii::t('shop', 'Cancel'), Url::toRoute('delivery-method/index'), ['class' => 'btn btn-xs btn-danger pull-right']); ?>
             <?= Html::submitButton(Yii::t('shop', 'Save'), ['class' => 'btn btn-xs btn-primary pull-right m-r-xs']); ?>
         </div>
-        <?php ActiveForm::end(); ?>
 
     </div>
-
+    <?php ActiveForm::end(); ?>
 </div>

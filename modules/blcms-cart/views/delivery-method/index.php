@@ -18,9 +18,12 @@ $this->title = Yii::t('shop', 'Delivery methods');
 <div class="ibox">
 
     <div class="ibox-title">
-        <?= Html::a(Html::tag('i', '', ['class' => 'fa fa-user-plus']) .
-            Yii::t('shop', 'Create delivery method'), ['save', 'languageId' => Language::getCurrent()->id], ['class' => 'btn btn-primary btn-xs pull-right']);
-        ?>
+        <div class="ibox-tools">
+            <?= Html::a(Html::tag('i', '', ['class' => 'fa fa-user-plus']) .
+                Yii::t('shop', 'Create delivery method'),
+                ['save', 'languageId' => Language::getCurrent()->id], ['class' => 'btn btn-primary btn-xs pull-right']);
+            ?>
+        </div>
         <h5>
             <i class="glyphicon glyphicon-list">
             </i>
@@ -30,12 +33,12 @@ $this->title = Yii::t('shop', 'Delivery methods');
 
     <div class="ibox-content">
 
-        <table id="my-grid" class="table table-hover">
+        <table class="table table-hover">
             <tr>
-                <th class="col-md-2 text-center"><?= Yii::t('shop', 'ID'); ?></th>
-                <th class="col-md-5 text-center"><?= Yii::t('shop', 'Title'); ?></th>
+                <th class="col-md-2"><?= Yii::t('shop', 'ID'); ?></th>
+                <th class="col-md-5"><?= Yii::t('shop', 'Title'); ?></th>
                 <th class="col-md-3 text-center"><?= Yii::t('shop', 'Logo'); ?></th>
-                <th class="col-md-2 text-center"><?= Yii::t('shop', 'Manage'); ?></th>
+                <th class="col-md-2"><?= Yii::t('shop', 'Manage'); ?></th>
             </tr>
             <?php foreach ($deliveryMethods as $deliveryMethod) : ?>
                 <tr>

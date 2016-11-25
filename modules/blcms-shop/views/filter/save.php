@@ -32,7 +32,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
 
         <div class="form-group">
-            <?= Html::a(Yii::t('shop', 'Close'), Url::to(['/shop/filter']), ['class' => 'btn btn-danger btn-xs pull-right']) ?>
+            <?= Html::a(Yii::t('shop', 'Cancel'), Url::to(['/shop/filter']), ['class' => 'btn btn-danger btn-xs pull-right']) ?>
             <?= Html::submitButton(Yii::t('shop', 'Save'), ['class' => 'btn btn-primary btn-xs pull-right m-r-xs']) ?>
         </div>
 

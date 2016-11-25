@@ -1,40 +1,39 @@
 <?php
 use bl\cms\shop\backend\assets\EditProductAsset;
-use bl\cms\shop\backend\components\form\ProductImageForm;
-use bl\cms\shop\backend\components\form\ProductVideoForm;
-use bl\cms\shop\common\entities\CategoryTranslation;
-use bl\cms\shop\common\entities\Param;
-use bl\cms\shop\common\entities\ParamTranslation;
 use bl\cms\shop\common\entities\Product;
-use bl\cms\shop\common\entities\ProductPrice;
-use bl\cms\shop\common\entities\ProductPriceTranslation;
-use bl\cms\shop\common\entities\ProductTranslation;
-use bl\cms\shop\common\entities\ProductCountryTranslation;
-use bl\cms\shop\common\entities\ProductVideo;
-use bl\cms\shop\common\entities\Vendor;
 use bl\multilang\entities\Language;
-use marqu3s\summernote\Summernote;
-use yii\helpers\ArrayHelper;
+use bl\multilang\MultiLangUrlManager;
 use yii\helpers\Html;
 use yii\helpers\Url;
-use yii\widgets\ActiveForm;
-use yii\widgets\Pjax;
 
 /**
  * @author Albert Gainutdinov <xalbert.einsteinx@gmail.com>
  *
- * @var $languages Language[]
  * @var $selectedLanguage Language
+ * @var $languages Language[]
  * @var $product Product
- * @var $products_translation ProductTranslation
- * @var $params_translation ParamTranslation
- * @var $categories CategoryTranslation[]
+ * @var \yii\web\View $this
+ * @var MultiLangUrlManager $urlManagerFrontend
+ * @var $viewName string
+ * @var $params array
  */
 
 EditProductAsset::register($this);
 
 $this->title = \Yii::t('shop', 'Edit product');
 $newProductMessage = Yii::t('shop', 'You must save new product before this action');
+
+$urlManagerFrontend = Yii::$app->urlManagerFrontend;
+
+$this->params['breadcrumbs'] = [
+    Yii::t('shop', 'Shop'),
+    [
+        'label' => Yii::t('shop', 'Products'),
+        'url' => ['/shop/product'],
+        'itemprop' => 'url'
+    ]
+];
+$this->params['breadcrumbs'][] = (!empty($product->translation)) ? $product->translation->title : '';
 ?>
 
 <!--BODY PANEL-->
@@ -42,45 +41,59 @@ $newProductMessage = Yii::t('shop', 'You must save new product before this actio
 
     <ul class="nav nav-tabs">
         <li class="<?= Yii::$app->controller->action->id == 'add-basic' || Yii::$app->controller->action->id == 'save' ? 'tab active' : 'tab'; ?>">
-            <?= Html::a(\Yii::t('shop', 'Basic'), Url::to(['add-basic', 'productId' => $product->id, 'languageId' => $selectedLanguage->id]),
+            <?= Html::a(\Yii::t('shop', 'Basic'), Url::to([
+                'add-basic', 'id' => $product->id, 'languageId' => $selectedLanguage->id
+            ]),
                 [
-                    'aria-expanded' => 'true'
-                ]); ?>
+                    'aria-expanded' => 'true',
+                ]);
+            ?>
         </li>
 
-        <li class="<?= Yii::$app->controller->action->id == 'add-image' ? 'active' : ''; ?>">
+        <li class="<?= (empty($product->translation)) ? 'disabled' : '';?> <?= Yii::$app->controller->action->id == 'add-image' ? 'active' : ''; ?>">
             <?=
             ($product->isNewRecord) ?
-                '<a>' . \Yii::t('shop', 'Photo') . '</a>' :
-                Html::a(\Yii::t('shop', 'Photo'), Url::to(['add-image', 'productId' => $product->id, 'languageId' => $selectedLanguage->id]),
+                Html::a(\Yii::t('shop', 'Photo'), null, [
+                    'data-toggle' => 'tooltip',
+                    'title' => $newProductMessage
+                ]) :
+                Html::a(\Yii::t('shop', 'Photo'), Url::to(['add-image', 'id' => $product->id, 'languageId' => $selectedLanguage->id]),
+                    [
+                        'aria-expanded' => 'true',
+                    ]); ?>
+        </li>
+        <li class="<?= (empty($product->translation)) ? 'disabled' : '';?> <?= Yii::$app->controller->action->id == 'add-video' ? 'tab active' : 'tab'; ?>">
+            <?=
+            ($product->isNewRecord) ?
+                Html::a(\Yii::t('shop', 'Video'), null, [
+                    'data-toggle' => 'tooltip',
+                    'title' => $newProductMessage
+                ]) :
+                Html::a(\Yii::t('shop', 'Video'), Url::to(['add-video', 'id' => $product->id, 'languageId' => $selectedLanguage->id]),
                     [
                         'aria-expanded' => 'true'
                     ]); ?>
         </li>
-        <li class="<?= Yii::$app->controller->action->id == 'add-video' ? 'tab active' : 'tab'; ?>">
+        <li class="<?= (empty($product->translation)) ? 'disabled' : '';?> <?= Yii::$app->controller->action->id == 'add-price' ? 'tab active' : 'tab'; ?>">
             <?=
             ($product->isNewRecord) ?
-                '<a>' . \Yii::t('shop', 'Video') . '</a>' :
-
-                Html::a(\Yii::t('shop', 'Video'), Url::to(['add-video', 'productId' => $product->id, 'languageId' => $selectedLanguage->id]),
+                Html::a(\Yii::t('shop', 'Prices'), null, [
+                    'data-toggle' => 'tooltip',
+                    'title' => $newProductMessage
+                ]) :
+                Html::a(\Yii::t('shop', 'Prices'), Url::to(['add-price', 'id' => $product->id, 'languageId' => $selectedLanguage->id]),
                     [
                         'aria-expanded' => 'true'
                     ]); ?>
         </li>
-        <li class="<?= Yii::$app->controller->action->id == 'add-price' ? 'tab active' : 'tab'; ?>">
+        <li class="<?= (empty($product->translation)) ? 'disabled' : '';?> <?= Yii::$app->controller->action->id == 'add-param' ? 'tab active' : 'tab'; ?>">
             <?=
             ($product->isNewRecord) ?
-                '<a>' . \Yii::t('shop', 'Prices') . '</a>' :
-                Html::a(\Yii::t('shop', 'Prices'), Url::to(['add-price', 'productId' => $product->id, 'languageId' => $selectedLanguage->id]),
-                    [
-                        'aria-expanded' => 'true'
-                    ]); ?>
-        </li>
-        <li class="<?= Yii::$app->controller->action->id == 'add-param' ? 'tab active' : 'tab'; ?>">
-            <?=
-            ($product->isNewRecord) ?
-                '<a>' . \Yii::t('shop', 'Params') . '</a>' :
-                Html::a(\Yii::t('shop', 'Params'), Url::to(['add-param', 'productId' => $product->id, 'languageId' => $selectedLanguage->id]),
+                Html::a(\Yii::t('shop', 'Params'), null, [
+                    'data-toggle' => 'tooltip',
+                    'title' => $newProductMessage
+                ]) :
+                Html::a(\Yii::t('shop', 'Params'), Url::to(['add-param', 'id' => $product->id, 'languageId' => $selectedLanguage->id]),
                     [
                         'aria-expanded' => 'true'
                     ]); ?>
@@ -95,39 +108,30 @@ $newProductMessage = Yii::t('shop', 'You must save new product before this actio
         <?= Html::a(\Yii::t('shop', 'Decline'), Url::toRoute(['change-product-status', 'id' => $product->id, 'status' => Product::STATUS_DECLINED]), ['class' => 'btn btn-danger btn-xs']); ?>
     <?php endif; ?>
 
-    <div class="ibox-content">
-        <!--CLOSE BUTTON-->
+    <div class="ibox-content ">
+
+        <!--VIEW ON SITE-->
+        <?php if (!empty($product->translation)) : ?>
+            <?= Html::a(Html::tag('i', '', ['class' => 'fa fa-external-link']) . Html::tag('span', Yii::t('shop', 'View on website')),
+                $urlManagerFrontend->createAbsoluteUrl(['/shop/product/show', 'id' => $product->id], true), [
+                    'class' => 'btn btn-info btn-xs pull-right m-t-xs m-l-xs',
+                    'target' => '_blank'
+                ]); ?>
+        <?php endif; ?>
+
+        <!-- LANGUAGES -->
+        <?= \bl\cms\shop\widgets\LanguageSwitcher::widget([
+            'languages' => $languages,
+            'selectedLanguage' => $selectedLanguage,
+            'model' => $product
+        ]); ?>
+
+        <!--CANCEL BUTTON-->
         <a href="<?= Url::to(['/shop/product']); ?>">
-            <?= Html::button(\Yii::t('shop', 'Close'), [
-                'class' => 'btn btn-xs btn-danger pull-right'
+            <?= Html::button(\Yii::t('shop', 'Cancel'), [
+                'class' => 'btn m-t-xs btn-danger btn-xs pull-right m-r-sm'
             ]); ?>
         </a>
-        <!-- LANGUAGES -->
-        <?php if (count($languages) > 1): ?>
-            <div class="dropdown pull-right">
-                <button class="btn btn-warning btn-xs dropdown-toggle m-r-xs" type="button"
-                        id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true"
-                        aria-expanded="true">
-                    <?= $selectedLanguage->name ?>
-                    <span class="caret"></span>
-                </button>
-                <?php if (count($languages) > 1): ?>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                        <?php foreach ($languages as $language): ?>
-                            <li>
-                                <a href="<?= Url::to([
-                                    'save',
-                                    'id' => $product->id,
-                                    'languageId' => $language->id]) ?>
-                                                ">
-                                    <?= $language->name ?>
-                                </a>
-                            </li>
-                        <?php endforeach; ?>
-                    </ul>
-                <?php endif; ?>
-            </div>
-        <?php endif; ?>
 
         <!--CONTENT-->
         <?= $this->render($viewName, $params); ?>

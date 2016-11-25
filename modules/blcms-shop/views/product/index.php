@@ -28,6 +28,11 @@ use yii\widgets\Pjax;
 
 $this->title = \Yii::t('shop', 'Product list');
 ProductAsset::register($this);
+
+$this->params['breadcrumbs'] = [
+    Yii::t('shop', 'Shop'),
+    Yii::t('shop', 'Products')
+];
 ?>
 
 <div class="ibox">
@@ -93,7 +98,7 @@ ProductAsset::register($this);
                         );
                         return $buttonUp . '<div>' . $model->position . '</div>' . $buttonDown;
                     },
-                    'contentOptions' => ['class' => 'vote-actions col-md-1'],
+                    'contentOptions' => ['class' => 'vote-actions'],
                 ],
 
                 /*TITLE*/
@@ -103,18 +108,23 @@ ProductAsset::register($this);
                     'value' => function ($model) {
                         $content = null;
                         if (!empty($model->translation->title)) {
+                            /** @var User $owner */
+                            $owner = (!empty(User::find()->where(['id' => $model->owner])->one()))
+                                ? User::find()->where(['id' => $model->owner])->one()
+                                : new User();
+
                             $content = Html::a(
                                 $model->translation->title,
                                 Url::toRoute(['save', 'id' => $model->id, 'languageId' => Language::getCurrent()->id])
                             );
                             $content .= '<br><small>' . Yii::t('shop', 'Created') . ' ' . $model->creation_time . '</small><br>';
-                            $content .= '<small>' . \Yii::t('shop', 'Created by') . ' ' . User::find()->where(['id' => $model->owner])->one()->username . '</small>';
+                            $content .= '<small>' . \Yii::t('shop', 'Created by') . ' ' . $owner->username . '</small>';
                         }
                         return $content;
                     },
                     'label' => Yii::t('shop', 'Title'),
                     'format' => 'html',
-                    'contentOptions' => ['class' => 'project-title col-md-4'],
+                    'contentOptions' => ['class' => 'project-title'],
                 ],
 
                 /*CATEGORY*/
@@ -125,7 +135,7 @@ ProductAsset::register($this);
                     'label' => Yii::t('shop', 'Category'),
                     'format' => 'text',
                     'filter' => ArrayHelper::map(Category::find()->all(), 'id', 'translation.title'),
-                    'contentOptions' => ['class' => 'project-title col-md-2'],
+                    'contentOptions' => ['class' => 'project-title'],
                 ],
 
                 /*BASE PRICE*/
@@ -156,11 +166,11 @@ ProductAsset::register($this);
                                 }
                             }
                         }
-                        return Html::a($content, Url::toRoute(['add-image', 'productId' => $model->id, 'languageId' => Language::getCurrent()->id]));
+                        return Html::a($content, Url::toRoute(['add-image', 'id' => $model->id, 'languageId' => Language::getCurrent()->id]));
                     },
                     'label' => Yii::t('shop', 'Images'),
                     'format' => 'html',
-                    'contentOptions' => ['class' => 'col-md-1 project-people'],
+                    'contentOptions' => ['class' => 'project-people'],
                 ],
 
                 /*STATUS*/
@@ -199,7 +209,7 @@ ProductAsset::register($this);
                             Product::STATUS_DECLINED => \Yii::t('shop', 'Declined'),
                             Product::STATUS_SUCCESS => \Yii::t('shop', 'Success')
                         ], ['class' => 'form-control', 'prompt' => \Yii::t('shop', 'All')]),
-                    'contentOptions' => ['class' => 'project-title text-center col-md-1'],
+                    'contentOptions' => ['class' => 'project-title text-center'],
                 ],
 
                 /*ACTIONS*/
@@ -211,7 +221,7 @@ ProductAsset::register($this);
                         return ManageButtons::widget(['model' => $model]);
                     },
                     'format' => 'raw',
-                    'contentOptions' => ['class' => 'col-md-2 text-center'],
+                    'contentOptions' => ['class' => 'text-center'],
                 ],
             ],
         ]);
