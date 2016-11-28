@@ -133,7 +133,7 @@ $this->title = Yii::t('cart', 'Order list');
                     'headerOptions' => ['class' => 'text-center col-md-2'],
                     'attribute' => 'status',
                     'filter' => ArrayHelper::map(OrderStatus::find()->all(), 'id', function ($model) {
-                        return $model->translation->title;
+                        return $model->translation->title ?? '';
                     }),
 
                     'value' => function ($model) {
